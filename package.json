@@ -1,0 +1,27 @@
+{
+  "name": "alurapic",
+  "version": "1.0.0",
+  "description": "Alurapic",
+  "main": "server.js",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "mongodb": "^3.1.13",
+    "mongoose": "^5.4.16"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flaviohenriquealmeida/alurapic.git"
+  },
+  "author": "Leandro Mello",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/flaviohenriquealmeida/alurapic/issues"
+  },
+  "homepage": "https://github.com/flaviohenriquealmeida/alurapic#readme"
+}
