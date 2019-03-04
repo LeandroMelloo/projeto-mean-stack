@@ -1,15 +1,21 @@
 module.exports = function(app) {
-    // buscar as fotos do array
-    app.get('/v1/fotos', function(req, res) {
 
-        // array de fotos, criado estaticamente sem conexão com o BD
-        var fotos = [
-            {_id:1, "titulo": "Leão","url":"http://www.fundosanimais.com/Minis/leoes.jpg"},
-            {_id:2, "titulo": "Leão 2","url":"http://www.fundosanimais.com/Minis/leoes.jpg"}
-        ]
+    var api = app.api.foto;
 
-        // retorna o array de fotos do tipo 'JSON'
-        res.json(fotos);
-    });
+     // define as rotas de acesso para 'buscarPorId' e 'removePorId'
+     app.route('/v1/fotos')
+        // buscar as fotos do array
+        .get(api.lista)
+        // adicionar as fotos dentro do array
+        .post(api.adiciona);
+
+    // define as rotas de acesso para 'buscarPorId' e 'removePorId'
+    app.route('/v1/fotos/:id')
+        // buscar as fotos do array por ID
+        .get(api.buscarPorId)
+        // deleta as fotos do array por ID
+        .delete(api.removePorId)
+        // atualizar as fotos do array por ID
+        .put(api.atualizaPorId);
 
 };

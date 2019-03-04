@@ -1,14 +1,18 @@
+const consign = require('consign'); 
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 
 // nosso primeiro middleware
 app.use(express.static('./public'));
 
-// require => referente a 'fotos.js' caminho da rotas
-require('../app/routes/foto')(app);
+app.use(bodyParser.json());
 
-// require => referente a 'grupo.js' caminho da rotas
-require('../app/routes/grupo')(app);
+// consign => referente aos caminhos das rotas('app/routes/foto.js, app/routes/grupo.js')
+consign({cwd: 'app'})
+    .include('api')
+    .then('routes')
+    .into(app);
 
 // confiurações do express
 
