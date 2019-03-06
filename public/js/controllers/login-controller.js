@@ -11,7 +11,7 @@ angular.module('alurapic')
             $http.post('/autenticar', 
             { login: usuario.login, senha: usuario.senha })
             .then(function() {
-                $location,path('/');
+                $location.path('/');
 
             }, function(error) {
                 console.log(error);

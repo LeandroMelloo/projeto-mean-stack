@@ -8,7 +8,6 @@ app.set('secret', 'homenavestruz');
 
 // nosso primeiro middleware
 app.use(express.static('./public'));
-
 app.use(bodyParser.json());
 
 // consign => referente aos caminhos das rotas('app/routes/foto.js, app/routes/grupo.js')

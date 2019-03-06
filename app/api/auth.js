@@ -1,51 +1,54 @@
-module.exports = function (app) {
+var mongoose = require('mongoose');
+var jwt  = require('jsonwebtoken'); 
 
-    const mongoose = require('mongoose'); // preciso do model do meu usuario
-    const jwt = require('jsonwebtoken'); // autenticar com 'jsonwebtoken'
-    const api = {};
-    const model = mongoose.model('Usuario'); // buscar os usuarios no MongoDB
+module.exports = function(app) {
 
-    api.autentica = function (req, res) {
+     var api = {};
+     var model = mongoose.model('Usuario');
 
-        model
-            .findOne({ login: req.body.login, senha: req.body.senha })
-            .then(function (usuario) {
-                if (!usuario) {
-                    console.log('Login e senha inválidos');
-                    res.sendStatus(401);
-                } else {
-                    // criar token
-                    var token = jwt.sign(usuario.login, app.get('secret'), {
-                        expiresTn: 84600 // quarda o tempo de expiração (24 horas);
-                    });
+     api.autentica = function(req, res) {
 
-                    console.log('Token criado e sendo enviado no header de resposta');
-                    res.set('x-acess-token', token);
-                    res.end();
-                };
+         model.findOne({
+             login: req.body.login,
+             senha: req.body.senha
+         })
+         .then(function(usuario) {
+             if (!usuario) {
+                 console.log('Login/senha inválidos');
+                 res.sendStatus(401);
+             } else {
+                console.log(usuario.login)
+                 var token = jwt.sign({login: usuario.login}, app.get('secret'), {
+                     expiresIn: 84600
+                 });
+                 console.log('Autenticado: token adicionado na resposta');
+                 res.set('x-access-token', token); 
+                 res.end(); 
+             }
+         });
+     };
 
-            }, function (error) {
-                console.log('Login e senha inválidos');
-                res.sendStatus(401);
+    api.verificaToken = function(req, res, next) {
+
+         var token = req.headers['x-access-token'];
+
+         if (token) {
+             console.log('Token recebido, decodificando');
+             jwt.verify(token, app.get('secret'), function(err, decoded) {
+                 if (err) {
+                     console.log('Token rejeitado');
+                     return res.sendStatus(401);
+                 } else {
+                     console.log('Token aceito')
+                     req.usuario = decoded;    
+                     next();
+                  }
             });
-    };
-
-    api.verificaToken = function (req, res) {
-        if (token) {
-            var token = req.headers['x-acess-token']; // recebo o token
-            console.log('Verificando Token....');
-            jwt.verify(token, app.get('secret'), function (err, decoded) {
-                if (err) {
-                    console.log('Token rejeitado');
-                    res.sendStatus(401);
-                };
-                req.usuario = decoded;
-                next(); // next => todas as minha outras rotas podem ser executadas
-            }); // jwt => verifica o token com meu segredo.
         } else {
-            console.log('Token não enviado')
-            res.sendStatus(401);
-        };
-    };
+            console.log('Nenhum token enviado');
+            return res.sendStatus(401);
+          }
+    }
+
     return api;
 };

@@ -1,5 +1,5 @@
 angular.module('alurapic')
-    .factory('tokenInterceptor', function ($window) {
+    .factory('tokenInterceptor', function ($window, $q, $location) {
 
         var interceptor = {}
 
@@ -7,11 +7,36 @@ angular.module('alurapic')
             var token = response.headers('x-access-token');
 
             if (token) {
-                console.log('Token armazenado no navegador')
                 $window.sessionStorage.token = token;
+                console.log('Token armazenado no navegador')
+            } else {
+                console.log('Token não foi armazenado no navegador')
             }
 
             return response;
+        };
+
+        interceptor.request = function(config) {
+            config.headers = config.headers || {};
+            if ($window.sessionStorage.token) {
+
+                config.headers['x-access-token'] = $window.sessionStorage.token;
+                console.log('Adicionando token no header da requisição para ser enviado para o servidor')
+            } else {
+                console.log('Não foi possível adicionar um token')
+            }
+
+            return config;
+        };
+
+        interceptor.responseError = function(rejection) {
+            if(rejection != null && rejection.status == 401) {
+                // redirecionar para a parcial de login
+                delete $window.sessionStorage.token;
+                $location.path('/login');
+            };
+
+            return $q.reject(rejection);
         };
 
         return interceptor;
